@@ -12,12 +12,12 @@ app.use(cors());
 require('./Routes/reminderjob');
 // Routes
 const signupRoute = require('./Routes/Signup');
-const loginRoute = require('../Routes/login');
-const managerTeamRoute = require('../Routes/addteam');
-const teamReqRoute = require('../Routes/teamreq'); 
-const teamApprovalRoutes = require('../Routes/reqapproval');
-const logsRouter = require('../Routes/log');
-const notificationRoutes = require('../Routes/notification');
+const loginRoute = require('./Routes/login');
+const managerTeamRoute = require('./Routes/addteam');
+const teamReqRoute = require('./Routes/teamreq'); 
+const teamApprovalRoutes = require('./Routes/reqapproval');
+const logsRouter = require('./Routes/log');
+const notificationRoutes = require('./Routes/notification');
 
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/reqappr', teamApprovalRoutes);
