@@ -1,0 +1,33 @@
+const express = require('express');
+const router = express.Router();
+const TeamMembers = require('../Models/Teammembers');
+const { verifyToken,isManager }= require('../Middleware/authmiddleware');
+
+router.post('/approve', verifyToken,isManager, async (req, res) => {
+    try {
+    const { requestId, action } = req.body; // action: 'approved' or 'rejected'
+
+    if (!['approved', 'rejected'].includes(action)) {
+      return res.status(400).json({ error: 'Invalid action' });
+    }
+
+    const request = await TeamMembers.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ error: 'Request not found' });
+    }
+
+    // Update only the status field (and review info)
+    request.status = action;
+    request.reviewedAt = new Date();
+    request.reviewedBy = req.user._id;
+
+    await request.save();
+
+    res.json({ message: `Request ${action} successfully` });
+  } catch (error) {
+    console.error('Approval error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+module.exports = router;

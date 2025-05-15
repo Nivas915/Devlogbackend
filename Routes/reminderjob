@@ -1,0 +1,42 @@
+const cron = require('node-cron');
+const Log = require('../Models/Log');
+const Notification = require('../Models/Notification');
+const User = require('../Models/User');
+
+// Run at 8:30 PM daily
+cron.schedule('30 20 * * *', async () => {
+  try {
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+
+    const allDevelopers = await User.find({ role: 'Developer' });
+
+    for (const dev of allDevelopers) {
+      const existingLog = await Log.findOne({
+        developerId: dev._id,
+        submittedAt: { $gte: startOfDay, $lt: endOfDay }
+      });
+
+      if (!existingLog) {
+        const alreadyReminded = await Notification.findOne({
+          userId: dev._id,
+          type: 'reminder',
+          createdAt: { $gte: startOfDay, $lt: endOfDay }
+        });
+
+        if (!alreadyReminded) {
+          await Notification.create({
+            userId: dev._id,
+            type: 'reminder',
+            message: 'Don’t forget to submit your daily log!',
+          });
+        }
+      }
+    }
+
+    console.log('🔔 8:30PM reminders sent to developers without logs.');
+  } catch (error) {
+    console.error('Error sending reminders:', error);
+  }
+});
