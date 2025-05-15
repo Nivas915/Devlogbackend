@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(cors());
 require('./Routes/reminderjob');
 // Routes
-const signupRoute = require('../Routes/Signup');
+const signupRoute = require('./Routes/Signup');
 const loginRoute = require('../Routes/login');
 const managerTeamRoute = require('../Routes/addteam');
 const teamReqRoute = require('../Routes/teamreq'); 
